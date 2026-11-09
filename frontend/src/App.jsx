@@ -1,9 +1,9 @@
-
 import Dashboard from "./Dashboard.jsx";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase.js";
 import Projects from "./Projects.jsx";
+import "./apple.css"; // musi być ostatnim importem
 
 function App() {
   const [session, setSession] = useState(null);
