@@ -395,3 +395,96 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
   .dash-chart-line { stroke-dashoffset: 0; }
 }
+
+/* ---------- Toasts (frosted pill with countdown) ---------- */
+.toast-container { top: 20px; right: 20px; gap: 10px; width: min(360px, calc(100vw - 32px)); }
+.toast {
+  position: relative; overflow: hidden; gap: 12px; padding: 14px 14px 14px 16px;
+  border: 1px solid var(--line); border-radius: 20px;
+  background: var(--glass); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px);
+  box-shadow: var(--shadow-2); animation: toastIn 0.5s var(--spring) both;
+}
+.toast-icon { width: 30px; height: 30px; font-size: 14px; }
+.toast-success .toast-icon { background: rgba(48, 179, 80, 0.15); color: var(--green); }
+.toast-error .toast-icon { background: rgba(255, 59, 48, 0.13); color: var(--red); }
+.toast-info .toast-icon { background: var(--accent-soft); color: var(--accent); }
+.toast-warning .toast-icon { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+.toast-content strong { margin: 0 0 2px; color: var(--ink); font-size: 14px; font-weight: 600; }
+.toast-content p { color: var(--ink-2); font-size: 13px; }
+.toast-close { width: 24px; height: 24px; padding: 0; border-radius: 50%; background: var(--fill); color: var(--ink-2); font-size: 15px; line-height: 1; }
+.toast-close:hover { background: var(--fill-2); color: var(--ink); }
+.toast-timer { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; transform-origin: left; background: currentColor; opacity: 0.35; animation: toastTimer 3.5s linear forwards; }
+.toast-success .toast-timer { color: var(--green); } .toast-error .toast-timer { color: var(--red); }
+.toast-info .toast-timer { color: var(--accent); } .toast-warning .toast-timer { color: var(--orange); }
+.toast:hover .toast-timer { animation-play-state: paused; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-14px) scale(0.95); } to { opacity: 1; transform: none; } }
+@keyframes toastTimer { to { transform: scaleX(0); } }
+
+/* =========================================================
+   Interaction layer
+   ========================================================= */
+.icon { flex-shrink: 0; display: block; }
+.project-completed-badge .icon { width: 12px; height: 12px; }
+.kanban-due-date .icon { display: inline-block; vertical-align: -2px; }
+.kanban-back-button, .kanban-column-add { display: inline-flex; align-items: center; gap: 8px; }
+.kanban-column-add { width: 100%; justify-content: center; }
+.projects-empty-icon .icon, .dash-empty-icon .icon { margin: 0 auto; }
+
+/* Cursor-following glow on cards */
+:root { --glow: rgba(0, 113, 227, 0.07); }
+@media (prefers-color-scheme: dark) { :root { --glow: rgba(41, 151, 255, 0.13); } }
+.dash-stat-card, .dash-panel, .projects-overview-card, .project-card, .kanban-stat, .kanban-progress, .kanban-task-card {
+  background-image: radial-gradient(260px circle at var(--mx, -400px) var(--my, -400px), var(--glow), transparent 70%);
+}
+
+/* Icon tiles react to the card */
+.dash-stat-icon, .projects-overview-icon, .project-card-symbol, .kanban-stat-icon { transition: transform 0.5s var(--spring); }
+.dash-stat-card:hover .dash-stat-icon, .projects-overview-card:hover .projects-overview-icon,
+.project-card:hover .project-card-symbol, .kanban-stat:hover .kanban-stat-icon { transform: scale(1.1) rotate(-6deg); }
+
+/* Sliding pill in sidebar nav */
+.sidebar-nav { position: relative; }
+.nav-pill {
+  position: absolute; left: 0; right: 0; top: 0; height: 40px; border-radius: 10px; background: var(--accent-soft);
+  transform: translateY(calc(var(--i, 0) * 47px)); transition: transform 0.55s var(--spring); pointer-events: none;
+}
+.nav-item { position: relative; z-index: 1; }
+.nav-item.active { background: transparent; }
+@media (max-width: 760px) { .nav-pill { display: none; } .nav-item.active { background: var(--accent-soft); } }
+
+/* Sliding thumb in the filter segmented control */
+.projects-filters { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); }
+.projects-filters::before {
+  content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 10px) / 3);
+  border-radius: 8px; background: var(--card); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+  transform: translateX(calc(var(--i, 0) * (100% + 2px))); transition: transform 0.45s var(--spring);
+}
+.projects-filters[data-active="1"] { --i: 1; } .projects-filters[data-active="2"] { --i: 2; }
+.projects-filters button { position: relative; z-index: 1; min-width: 84px; }
+.projects-filters button.active { background: transparent; box-shadow: none; }
+
+/* Interactive chart */
+.dash-chart-point { cursor: pointer; transition: r 0.3s var(--spring), stroke-width 0.2s ease; }
+.dash-chart-point.active { r: 6.5px; stroke-width: 3; }
+.dash-chart-guide { stroke: var(--accent); stroke-opacity: 0.3; stroke-dasharray: 3 4; }
+.dash-chart-tip { pointer-events: none; animation: fade 0.2s ease both; }
+.dash-chart-tip rect { fill: var(--ink); }
+.dash-chart-tip text { fill: var(--bg); font-size: 11px; font-weight: 600; text-anchor: middle; }
+
+/* Drag feedback on kanban */
+.kanban-task-card { cursor: grab; }
+.kanban-task-card:active { cursor: grabbing; }
+.kanban-column-over .kanban-empty-column { border-color: var(--accent); color: var(--accent); transform: scale(1.02); transition: all 0.3s var(--spring); }
+
+/* Confirm dialog */
+.confirm-backdrop { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, 0.32); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: fade 0.2s ease both; }
+.confirm-dialog { width: min(100%, 340px); padding: 28px 24px 20px; text-align: center; border: 1px solid var(--line); border-radius: 24px; background: var(--card); box-shadow: var(--shadow-3); animation: pop 0.45s var(--spring) both; }
+.confirm-icon { width: 48px; height: 48px; display: grid; place-items: center; margin: 0 auto 14px; border-radius: 50%; background: rgba(255, 59, 48, 0.12); color: var(--red); }
+.confirm-dialog h3 { margin: 0 0 6px; color: var(--ink); font-size: 19px; font-weight: 700; letter-spacing: -0.025em; }
+.confirm-dialog p { margin: 0 0 22px; color: var(--ink-2); font-size: 14px; line-height: 1.45; }
+.confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.confirm-actions button { height: 42px; border: 0; border-radius: 980px; font-size: 15px; font-weight: 500; }
+.confirm-cancel { background: var(--fill); color: var(--ink); }
+.confirm-cancel:hover { background: var(--fill-2); }
+.confirm-danger { background: var(--red); color: #fff; }
+.confirm-danger:hover { filter: brightness(1.08); box-shadow: 0 6px 18px rgba(255, 59, 48, 0.3); }

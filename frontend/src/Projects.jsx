@@ -4,6 +4,7 @@ import Kanban from "./Kanban.jsx";
 import { useToast } from "./hooks/useToast.js";
 import Toast from "./components/Toast.jsx";
 import "./Projects.css";
+import { Icon, useConfirm } from "./ui.jsx";
 
 const pluralProjects = (count) =>
   count === 1 ? "project" : "projects";
@@ -23,6 +24,25 @@ function Projects() {
   const [sort, setSort] = useState("newest");
 
   const { toasts, showToast, removeToast } = useToast();
+  const { ask, dialog } = useConfirm();
+
+  useEffect(() => {
+    function onKey(event) {
+      const tag = event.target.tagName;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === "n" && !showForm && !selectedProject) {
+        event.preventDefault();
+        openCreateForm();
+      }
+      if (event.key === "/" && !selectedProject) {
+        event.preventDefault();
+        document.querySelector(".projects-search input")?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showForm, selectedProject]);
 
   async function loadProjects() {
     setLoading(true);
@@ -191,9 +211,10 @@ function Projects() {
   }
 
   async function deleteProject(id) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
+    const confirmed = await ask({
+      title: "Delete this project?",
+      message: "All of its tasks will be deleted too. This can't be undone.",
+    });
 
     if (!confirmed) return;
 
@@ -317,7 +338,7 @@ function Projects() {
         </div>
 
         <button className="projects-create-button" onClick={openCreateForm}>
-          <span className="projects-plus">+</span>
+          <Icon name="plus" size={16} />
           New Project
         </button>
       </section>
@@ -325,7 +346,7 @@ function Projects() {
       <section className="projects-overview">
         <div className="projects-overview-card">
           <div className="projects-overview-icon icon-purple">
-            <span>▦</span>
+            <Icon name="folder" />
           </div>
           <div>
             <span className="projects-overview-label">All Projects</span>
@@ -336,7 +357,7 @@ function Projects() {
 
         <div className="projects-overview-card">
           <div className="projects-overview-icon icon-blue">
-            <span>◷</span>
+            <Icon name="clock" />
           </div>
           <div>
             <span className="projects-overview-label">All Tasks</span>
@@ -347,7 +368,7 @@ function Projects() {
 
         <div className="projects-overview-card">
           <div className="projects-overview-icon icon-green">
-            <span>✓</span>
+            <Icon name="check" size={12} />
           </div>
           <div>
             <span className="projects-overview-label">Completed Tasks</span>
@@ -375,10 +396,10 @@ function Projects() {
 
         <div className="projects-toolbar">
           <div className="projects-search">
-            <span className="projects-search-icon">⌕</span>
+            <span className="projects-search-icon"><Icon name="search" size={16} /></span>
             <input
               type="search"
-              placeholder="Search projects..."
+              placeholder="Search projects (press /)"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               aria-label="Search projects"
@@ -395,7 +416,7 @@ function Projects() {
           </div>
 
           <div className="projects-toolbar-right">
-            <div className="projects-filters">
+            <div className="projects-filters" data-active={["all", "active", "completed"].indexOf(filter)}>
               <button
                 className={filter === "all" ? "active" : ""}
                 onClick={() => setFilter("all")}
@@ -443,7 +464,7 @@ function Projects() {
         ) : filteredProjects.length === 0 ? (
           <div className="projects-empty">
             <div className="projects-empty-icon">
-              {search || filter !== "all" ? "⌕" : "✦"}
+              <Icon name={search || filter !== "all" ? "search" : "sparkle"} size={26} />
             </div>
             <h3>
               {search || filter !== "all"
@@ -497,7 +518,7 @@ function Projects() {
                 >
                   <div className="project-card-top">
                     <div className="project-card-symbol">
-                      <span>▦</span>
+                      <Icon name="folder" />
                     </div>
 
                     <div className="project-card-menu">
@@ -507,7 +528,7 @@ function Projects() {
                         title="Edit project"
                         aria-label={`Edit project ${project.name}`}
                       >
-                        ✎
+                        <Icon name="edit" size={15} />
                       </button>
                       <button
                         className="project-icon-button danger"
@@ -515,7 +536,7 @@ function Projects() {
                         title="Delete project"
                         aria-label={`Delete project ${project.name}`}
                       >
-                        ×
+                        <Icon name="trash" size={15} />
                       </button>
                     </div>
                   </div>
@@ -525,7 +546,7 @@ function Projects() {
                       <h3>{project.name}</h3>
                       {isCompleted && (
                         <span className="project-completed-badge">
-                          <span>✓</span> Completed
+                          <Icon name="check" size={12} /> Completed
                         </span>
                       )}
                     </div>
@@ -676,6 +697,8 @@ function Projects() {
           </form>
         </div>
       )}
+
+      {dialog}
 
       <div className="toast-container">
         {toasts.map((toast) => (

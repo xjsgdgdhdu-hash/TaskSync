@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./lib/supabase.js";
 import "./Dashboard.css";
+import { Icon, CountUp } from "./ui.jsx";
 
 const STATUS_LABELS = {
   todo: "To Do",
@@ -37,6 +38,7 @@ function Dashboard({ onOpenProjects, userEmail }) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hover, setHover] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -169,7 +171,7 @@ function Dashboard({ onOpenProjects, userEmail }) {
         </div>
 
         <button className="dash-primary-button" onClick={onOpenProjects}>
-          <span className="dash-button-plus">＋</span>
+          <Icon name="plus" size={16} />
           Open Projects
           <span className="dash-button-arrow">→</span>
         </button>
@@ -185,10 +187,10 @@ function Dashboard({ onOpenProjects, userEmail }) {
       <section className="dash-stats-grid">
         <article className="dash-stat-card dash-stat-purple">
           <div className="dash-stat-top">
-            <span className="dash-stat-icon">▦</span>
+            <span className="dash-stat-icon"><Icon name="folder" /></span>
             <span className="dash-stat-caption">WORKSPACE</span>
           </div>
-          <div className="dash-stat-number">{loading ? "—" : projects.length}</div>
+          <div className="dash-stat-number">{loading ? "—" : <CountUp value={projects.length} />}</div>
           <div className="dash-stat-label">Projects</div>
           <div className="dash-stat-foot">Your workspaces</div>
           <span className="dash-stat-watermark">▦</span>
@@ -196,10 +198,10 @@ function Dashboard({ onOpenProjects, userEmail }) {
 
         <article className="dash-stat-card dash-stat-blue">
           <div className="dash-stat-top">
-            <span className="dash-stat-icon">☷</span>
+            <span className="dash-stat-icon"><Icon name="list" /></span>
             <span className="dash-stat-caption">ALL TASKS</span>
           </div>
-          <div className="dash-stat-number">{loading ? "—" : tasks.length}</div>
+          <div className="dash-stat-number">{loading ? "—" : <CountUp value={tasks.length} />}</div>
           <div className="dash-stat-label">All Tasks</div>
           <div className="dash-stat-foot">Across your workspace</div>
           <span className="dash-stat-watermark">☷</span>
@@ -207,10 +209,10 @@ function Dashboard({ onOpenProjects, userEmail }) {
 
         <article className="dash-stat-card dash-stat-orange">
           <div className="dash-stat-top">
-            <span className="dash-stat-icon">◷</span>
+            <span className="dash-stat-icon"><Icon name="clock" /></span>
             <span className="dash-stat-caption">IN PROGRESS</span>
           </div>
-          <div className="dash-stat-number">{loading ? "—" : inProgress}</div>
+          <div className="dash-stat-number">{loading ? "—" : <CountUp value={inProgress} />}</div>
           <div className="dash-stat-label">In Progress</div>
           <div className="dash-stat-foot">Currently in progress</div>
           <span className="dash-stat-watermark">◷</span>
@@ -218,10 +220,10 @@ function Dashboard({ onOpenProjects, userEmail }) {
 
         <article className="dash-stat-card dash-stat-green">
           <div className="dash-stat-top">
-            <span className="dash-stat-icon">✓</span>
+            <span className="dash-stat-icon"><Icon name="check" /></span>
             <span className="dash-stat-caption">COMPLETED</span>
           </div>
-          <div className="dash-stat-number">{loading ? "—" : completed}</div>
+          <div className="dash-stat-number">{loading ? "—" : <CountUp value={completed} />}</div>
           <div className="dash-stat-label">Completed</div>
           <div className="dash-stat-foot">Great work!</div>
           <span className="dash-stat-watermark">✓</span>
@@ -242,7 +244,7 @@ function Dashboard({ onOpenProjects, userEmail }) {
           <div className="dash-productivity-content">
             <div className="dash-progress-ring" style={{ "--progress": `${completion}%` }}>
               <div className="dash-progress-inner">
-                <strong>{loading ? "—" : `${completion}%`}</strong>
+                <strong>{loading ? "—" : <CountUp value={completion} suffix="%" />}</strong>
                 <span>completed</span>
               </div>
             </div>
@@ -251,21 +253,21 @@ function Dashboard({ onOpenProjects, userEmail }) {
               <div className="dash-progress-detail">
                 <span className="dash-detail-dot dash-dot-green" />
                 <div>
-                  <strong>{loading ? "—" : completed}</strong>
+                  <strong>{loading ? "—" : <CountUp value={completed} />}</strong>
                   <span>Completed Tasks</span>
                 </div>
               </div>
               <div className="dash-progress-detail">
                 <span className="dash-detail-dot dash-dot-blue" />
                 <div>
-                  <strong>{loading ? "—" : tasks.length - completed}</strong>
+                  <strong>{loading ? "—" : <CountUp value={tasks.length - completed} />}</strong>
                   <span>Remaining Tasks</span>
                 </div>
               </div>
               <div className="dash-progress-detail">
                 <span className="dash-detail-dot dash-dot-orange" />
                 <div>
-                  <strong>{loading ? "—" : overdue}</strong>
+                  <strong>{loading ? "—" : <CountUp value={overdue} />}</strong>
                   <span>Overdue Tasks</span>
                 </div>
               </div>
@@ -288,12 +290,12 @@ function Dashboard({ onOpenProjects, userEmail }) {
               <h2>Activity</h2>
               <p>New tasks from the last 7 days.</p>
             </div>
-            <span className="dash-activity-icon">↗</span>
+            <span className="dash-activity-icon"><Icon name="trend" size={17} /></span>
           </div>
 
           <div className="dash-chart">
             <div className="dash-chart-total">
-              <strong>{loading ? "—" : activity.reduce((sum, day) => sum + day.count, 0)}</strong>
+              <strong>{loading ? "—" : <CountUp value={activity.reduce((sum, day) => sum + day.count, 0)} />}</strong>
               <span>tasks created</span>
             </div>
 
@@ -315,13 +317,28 @@ function Dashboard({ onOpenProjects, userEmail }) {
                     const x = 18 + index * 57;
                     const y = 112 - (day.count / maxActivity) * 88;
                     return (
-                      <circle
+                      <g
                         key={day.date}
-                        cx={x}
-                        cy={y}
-                        r="4"
-                        className="dash-chart-point"
-                      />
+                        onMouseEnter={() => setHover(index)}
+                        onMouseLeave={() => setHover(null)}
+                      >
+                        {hover === index && (
+                          <line x1={x} x2={x} y1="8" y2="112" className="dash-chart-guide" />
+                        )}
+                        <circle cx={x} cy={y} r="16" fill="transparent" />
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r="4"
+                          className={`dash-chart-point ${hover === index ? "active" : ""}`}
+                        />
+                        {hover === index && (
+                          <g className="dash-chart-tip" transform={`translate(${Math.min(Math.max(x - 34, 0), 310)}, ${Math.max(y - 36, -6)})`}>
+                            <rect width="68" height="24" rx="9" />
+                            <text x="34" y="16">{day.count} {day.count === 1 ? "task" : "tasks"}</text>
+                          </g>
+                        )}
+                      </g>
                     );
                   })}
                 </>
@@ -354,7 +371,7 @@ function Dashboard({ onOpenProjects, userEmail }) {
             <div className="dash-empty-state">Loading projects...</div>
           ) : projectProgress.length === 0 ? (
             <div className="dash-empty-state">
-              <span className="dash-empty-icon">▦</span>
+              <span className="dash-empty-icon"><Icon name="folder" size={28} /></span>
               <strong>No projects yet</strong>
               <span>Create your first project and start organizing your work.</span>
               <button className="dash-inline-action" onClick={onOpenProjects}>
@@ -405,7 +422,7 @@ function Dashboard({ onOpenProjects, userEmail }) {
             <div className="dash-empty-state">Loading tasks...</div>
           ) : recentTasks.length === 0 ? (
             <div className="dash-empty-state">
-              <span className="dash-empty-icon">☷</span>
+              <span className="dash-empty-icon"><Icon name="list" size={28} /></span>
               <strong>No tasks yet</strong>
               <span>Add tasks to one of your projects.</span>
               <button className="dash-inline-action" onClick={onOpenProjects}>

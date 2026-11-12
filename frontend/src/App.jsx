@@ -1,11 +1,14 @@
+
 import Dashboard from "./Dashboard.jsx";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase.js";
 import Projects from "./Projects.jsx";
-import "./apple.css"; // musi być ostatnim importem
+import { Icon, useSpotlight } from "./ui.jsx";
+import "./apple.css"; // must stay the last import
 
 function App() {
+  useSpotlight();
   const [session, setSession] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [view, setView] = useState("dashboard");
@@ -260,12 +263,13 @@ function App() {
 
         <div className="sidebar-section-label">WORKSPACE</div>
 
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav" style={{ "--i": view === "projects" ? 1 : 0 }}>
+          <span className="nav-pill" />
           <button
             className={`nav-item ${view === "dashboard" ? "active" : ""}`}
             onClick={() => setView("dashboard")}
           >
-            <span className="nav-icon">⌂</span>
+            <span className="nav-icon"><Icon name="home" /></span>
             <span>Dashboard</span>
             {view === "dashboard" && <span className="active-indicator" />}
           </button>
@@ -274,7 +278,7 @@ function App() {
             className={`nav-item ${view === "projects" ? "active" : ""}`}
             onClick={() => setView("projects")}
           >
-            <span className="nav-icon">▦</span>
+            <span className="nav-icon"><Icon name="folder" /></span>
             <span>Projects</span>
             {view === "projects" && <span className="active-indicator" />}
           </button>
@@ -292,7 +296,7 @@ function App() {
           </div>
 
           <button className="logout-button" onClick={handleLogout}>
-            <span>↪</span>
+            <span><Icon name="logout" size={17} /></span>
             Log out
           </button>
         </div>

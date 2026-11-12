@@ -4,6 +4,7 @@ import { supabase } from "./lib/supabase.js";
 import { useToast } from "./hooks/useToast.js";
 import Toast from "./components/Toast.jsx";
 import "./Kanban.css";
+import { Icon, CountUp, useConfirm } from "./ui.jsx";
 
 const statuses = [
   { value: "todo", label: "To Do", icon: "○" },
@@ -31,6 +32,7 @@ function Kanban({ project, onBack }) {
   const [formOpen, setFormOpen] = useState(false);
 
   const { toasts, showToast, removeToast } = useToast();
+  const { ask, dialog } = useConfirm();
 
   async function loadTasks() {
     setLoading(true);
@@ -207,9 +209,10 @@ function Kanban({ project, onBack }) {
   }
 
   async function deleteTask(id) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
+    const confirmed = await ask({
+      title: "Delete this task?",
+      message: "This can't be undone.",
+    });
 
     if (!confirmed) return;
 
@@ -279,7 +282,7 @@ function Kanban({ project, onBack }) {
     <main className="kanban-page">
       <div className="kanban-topbar">
         <button className="kanban-back-button" onClick={onBack}>
-          <span>←</span> All Projects
+          <Icon name="arrowL" size={17} /> All Projects
         </button>
 
         <span className="kanban-breadcrumb">
@@ -295,39 +298,39 @@ function Kanban({ project, onBack }) {
         </div>
 
         <button className="kanban-add-button" onClick={openNewTaskForm}>
-          <span>＋</span> Add Task
+          <Icon name="plus" size={16} /> Add task
         </button>
       </header>
 
       <section className="kanban-overview">
         <div className="kanban-stat">
-          <span className="kanban-stat-icon purple">▦</span>
+          <span className="kanban-stat-icon purple"><Icon name="list" /></span>
           <div>
-            <strong>{tasks.length}</strong>
+            <strong><CountUp value={tasks.length} /></strong>
             <span>All Tasks</span>
           </div>
         </div>
 
         <div className="kanban-stat">
-          <span className="kanban-stat-icon green">✓</span>
+          <span className="kanban-stat-icon green"><Icon name="check" /></span>
           <div>
-            <strong>{completedCount}</strong>
+            <strong><CountUp value={completedCount} /></strong>
             <span>Completed</span>
           </div>
         </div>
 
         <div className="kanban-stat">
-          <span className="kanban-stat-icon orange">↑</span>
+          <span className="kanban-stat-icon orange"><Icon name="flag" /></span>
           <div>
-            <strong>{highPriorityCount}</strong>
+            <strong><CountUp value={highPriorityCount} /></strong>
             <span>High Priority</span>
           </div>
         </div>
 
         <div className="kanban-stat">
-          <span className="kanban-stat-icon red">◷</span>
+          <span className="kanban-stat-icon red"><Icon name="clock" /></span>
           <div>
-            <strong>{overdueCount}</strong>
+            <strong><CountUp value={overdueCount} /></strong>
             <span>Overdue</span>
           </div>
         </div>
@@ -335,7 +338,7 @@ function Kanban({ project, onBack }) {
         <div className="kanban-progress">
           <div className="kanban-progress-heading">
             <span>Project Progress</span>
-            <strong>{progress}%</strong>
+            <strong><CountUp value={progress} suffix="%" /></strong>
           </div>
           <div className="kanban-progress-track">
             <div
@@ -512,7 +515,7 @@ function Kanban({ project, onBack }) {
                       <div className="kanban-card-footer">
                         {task.due_date ? (
                           <span className={`kanban-due-date ${isOverdue(task) ? "overdue" : ""}`}>
-                            ◷ {isOverdue(task) ? "Overdue · " : ""}
+                            <Icon name="calendar" size={12} /> {isOverdue(task) ? "Overdue · " : ""}
                             {formatDate(task.due_date)}
                           </span>
                         ) : (
@@ -526,7 +529,7 @@ function Kanban({ project, onBack }) {
                             title="Edit task"
                             aria-label="Edit task"
                           >
-                            ✎
+                            <Icon name="edit" size={14} />
                           </button>
                           <button
                             type="button"
@@ -534,7 +537,7 @@ function Kanban({ project, onBack }) {
                             title="Delete task"
                             aria-label="Delete task"
                           >
-                            ×
+                            <Icon name="trash" size={14} />
                           </button>
                         </div>
                       </div>
@@ -570,13 +573,15 @@ function Kanban({ project, onBack }) {
                   type="button"
                   onClick={openNewTaskForm}
                 >
-                  ＋ Add Task
+                  <Icon name="plus" size={14} /> Add task
                 </button>
               </section>
             );
           })}
         </div>
       )}
+
+      {dialog}
 
       <div className="toast-container">
         {toasts.map((toast) => (
