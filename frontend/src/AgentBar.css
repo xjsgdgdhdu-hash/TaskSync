@@ -1,0 +1,32 @@
+.agent-fab { position: fixed; right: 24px; bottom: 24px; z-index: 900; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px 0 16px; border: 1px solid var(--line); border-radius: 980px; background: var(--glass); color: var(--ink); font-size: 14px; font-weight: 500; backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); box-shadow: var(--shadow-2); }
+.agent-fab:hover { transform: translateY(-2px); }
+.agent-fab .icon { color: var(--accent); }
+.agent-fab kbd { padding: 2px 7px; border-radius: 7px; background: var(--fill); color: var(--ink-3); font: inherit; font-size: 12px; }
+.agent-overlay { position: fixed; inset: 0; z-index: 1500; display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: fade 0.2s ease both; }
+.agent-panel { display: flex; flex-direction: column; width: min(100%, 640px); max-height: 70vh; border: 1px solid var(--line); border-radius: 26px; background: var(--glass); backdrop-filter: saturate(180%) blur(40px); -webkit-backdrop-filter: saturate(180%) blur(40px); box-shadow: var(--shadow-3); overflow: hidden; animation: pop 0.45s var(--spring) both; }
+.agent-thread { flex: 1; min-height: 120px; overflow-y: auto; padding: 22px 22px 8px; display: flex; flex-direction: column; gap: 10px; }
+.agent-empty { text-align: center; padding: 18px 0 8px; }
+.agent-empty-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 17px; background: var(--accent-soft); color: var(--accent); }
+.agent-empty h3 { margin: 0 0 4px; color: var(--ink); font-size: 20px; font-weight: 700; letter-spacing: -0.025em; }
+.agent-empty p { margin: 0 0 18px; color: var(--ink-2); font-size: 14px; }
+.agent-suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.agent-suggestions button { padding: 8px 14px; border: 0; border-radius: 980px; background: var(--fill); color: var(--ink); font-size: 13px; }
+.agent-suggestions button:hover { background: var(--accent-soft); color: var(--accent); }
+.agent-msg { max-width: 86%; animation: rise 0.4s var(--ease) both; }
+.agent-msg p { margin: 0; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.agent-user { align-self: flex-end; }
+.agent-user p { background: var(--accent); color: #fff; border-bottom-right-radius: 6px; }
+.agent-assistant { align-self: flex-start; display: flex; flex-direction: column; gap: 6px; }
+.agent-assistant p { background: var(--fill); color: var(--ink); border-bottom-left-radius: 6px; }
+.agent-error p { color: var(--red); }
+.agent-action { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 5px 11px; border-radius: 99px; background: rgba(48, 179, 80, 0.14); color: var(--green); font-size: 12px; font-weight: 600; }
+.agent-typing { flex-direction: row; gap: 5px; padding: 14px 16px; border-radius: 18px; background: var(--fill); }
+.agent-typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); animation: agentDot 1.2s ease-in-out infinite; }
+.agent-typing span:nth-child(2) { animation-delay: 0.15s; } .agent-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes agentDot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+.agent-input { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 22px; border-top: 1px solid var(--line); color: var(--ink-3); }
+.agent-input input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--ink); font-size: 16px; }
+.agent-input button { width: 34px; height: 34px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--accent); color: #fff; }
+.agent-input button .icon { transform: rotate(90deg); }
+.agent-input button:disabled { background: var(--fill-2); color: var(--ink-3); }
+@media (max-width: 760px) { .agent-fab { right: 14px; bottom: 14px; } .agent-fab kbd { display: none; } .agent-overlay { padding-top: 6vh; } }

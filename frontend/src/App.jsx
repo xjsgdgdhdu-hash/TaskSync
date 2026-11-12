@@ -4,6 +4,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase.js";
 import Projects from "./Projects.jsx";
+import AgentBar from "./AgentBar.jsx";
 import { Icon, useSpotlight } from "./ui.jsx";
 import "./apple.css"; // must stay the last import
 
@@ -12,6 +13,7 @@ function App() {
   const [session, setSession] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [view, setView] = useState("dashboard");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState("");
@@ -321,15 +323,18 @@ function App() {
 
         {view === "projects" ? (
           <div className="page-content projects-page">
-            <Projects />
+            <Projects key={refreshKey} />
           </div>
         ) : (
           <Dashboard
+            key={refreshKey}
             onOpenProjects={() => setView("projects")}
             userEmail={session.user.email}
           />
         )}
       </main>
+
+      <AgentBar onChanged={() => setRefreshKey((key) => key + 1)} />
     </div>
   );
 }
