@@ -5,6 +5,7 @@ import { useToast } from "./hooks/useToast.js";
 import Toast from "./components/Toast.jsx";
 import "./Kanban.css";
 import { Icon, CountUp, useConfirm } from "./ui.jsx";
+import TaskDrawer from "./TaskDrawer.jsx";
 
 const statuses = [
   { value: "todo", label: "To Do", icon: "○" },
@@ -30,6 +31,27 @@ function Kanban({ project, onBack }) {
   const [draggedTaskId, setDraggedTaskId] = useState(null);
   const [dragOverStatus, setDragOverStatus] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [openTaskId, setOpenTaskId] = useState(null);
+  const [subStats, setSubStats] = useState({});
+
+  useEffect(() => {
+    const ids = tasks.map((task) => task.id);
+    if (!ids.length) return;
+    supabase
+      .from("subtasks")
+      .select("task_id, done")
+      .in("task_id", ids)
+      .then(({ data }) => {
+        if (!data) return;
+        const stats = {};
+        data.forEach((row) => {
+          const entry = (stats[row.task_id] ||= { done: 0, total: 0 });
+          entry.total += 1;
+          if (row.done) entry.done += 1;
+        });
+        setSubStats(stats);
+      });
+  }, [tasks.length, project.id]);
 
   const { toasts, showToast, removeToast } = useToast();
   const { ask, dialog } = useConfirm();
@@ -492,6 +514,14 @@ function Kanban({ project, onBack }) {
                       draggable
                       onDragStart={(event) => handleDragStart(event, task)}
                       onDragEnd={handleDragEnd}
+                      tabIndex={0}
+                      onClick={(event) => {
+                        if (event.target.closest("button, select, label")) return;
+                        setOpenTaskId(task.id);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" && event.target === event.currentTarget) setOpenTaskId(task.id);
+                      }}
                     >
                       <div className="kanban-card-top">
                         <span className={`kanban-priority priority-${task.priority || "medium"}`}>
@@ -510,6 +540,19 @@ function Kanban({ project, onBack }) {
                         <p className="kanban-card-description">
                           {task.description}
                         </p>
+                      )}
+
+                      {(subStats[task.id]?.total > 0 || task.labels?.length > 0) && (
+                        <div className="kanban-card-meta">
+                          {subStats[task.id]?.total > 0 && (
+                            <span className="kanban-meta-chip">
+                              <Icon name="check" size={11} /> {subStats[task.id].done}/{subStats[task.id].total}
+                            </span>
+                          )}
+                          {task.labels?.slice(0, 3).map((label) => (
+                            <span className="kanban-label" key={label}>{label}</span>
+                          ))}
+                        </div>
                       )}
 
                       <div className="kanban-card-footer">
@@ -579,6 +622,21 @@ function Kanban({ project, onBack }) {
             );
           })}
         </div>
+      )}
+
+      {tasks.find((task) => task.id === openTaskId) && (
+        <TaskDrawer
+          key={openTaskId}
+          task={tasks.find((task) => task.id === openTaskId)}
+          statuses={statuses}
+          priorities={priorities}
+          onClose={() => setOpenTaskId(null)}
+          onUpdate={(id, changes) =>
+            setTasks((current) => current.map((item) => (item.id === id ? { ...item, ...changes } : item)))
+          }
+          onSubStats={(id, stats) => setSubStats((current) => ({ ...current, [id]: stats }))}
+          showToast={showToast}
+        />
       )}
 
       {dialog}
