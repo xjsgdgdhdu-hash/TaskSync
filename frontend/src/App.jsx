@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase.js";
 import Projects from "./Projects.jsx";
 import AgentBar from "./AgentBar.jsx";
+import { startDemo } from "./demo.js";
 import { Icon, useSpotlight } from "./ui.jsx";
 import "./apple.css"; // must stay the last import
 
@@ -150,6 +151,25 @@ function App() {
     }
   }
 
+  async function handleDemo() {
+    setMessage("");
+    setLoading(true);
+
+    try {
+      await startDemo();
+      setRefreshKey((key) => key + 1);
+    } catch (error) {
+      setMessage("Demo unavailable: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function leaveDemo() {
+    await supabase.auth.signOut();
+    setIsRegister(true);
+  }
+
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
 
@@ -227,6 +247,13 @@ function App() {
               <span>→</span>
             </button>
           </form>
+
+          <div className="auth-divider"><span>or</span></div>
+
+          <button type="button" className="auth-demo" onClick={handleDemo} disabled={loading}>
+            <Icon name="sparkle" size={16} />
+            Try the demo
+          </button>
 
           {message && (
             <div className="auth-message" role="status">
@@ -320,6 +347,14 @@ function App() {
             </div>
           </div>
         </header>
+
+        {session.user.is_anonymous && (
+          <div className="demo-banner">
+            <Icon name="sparkle" size={16} />
+            <span>You're exploring a demo workspace with sample data.</span>
+            <button onClick={leaveDemo}>Create account</button>
+          </div>
+        )}
 
         {view === "projects" ? (
           <div className="page-content projects-page">
