@@ -1,32 +1,108 @@
-.agent-fab { position: fixed; right: 24px; bottom: 24px; z-index: 900; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px 0 16px; border: 1px solid var(--line); border-radius: 980px; background: var(--glass); color: var(--ink); font-size: 14px; font-weight: 500; backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); box-shadow: var(--shadow-2); }
-.agent-fab:hover { transform: translateY(-2px); }
-.agent-fab .icon { color: var(--accent); }
-.agent-fab kbd { padding: 2px 7px; border-radius: 7px; background: var(--fill); color: var(--ink-3); font: inherit; font-size: 12px; }
-.agent-overlay { position: fixed; inset: 0; z-index: 1500; display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: fade 0.2s ease both; }
-.agent-panel { display: flex; flex-direction: column; width: min(100%, 640px); max-height: 70vh; border: 1px solid var(--line); border-radius: 26px; background: var(--glass); backdrop-filter: saturate(180%) blur(40px); -webkit-backdrop-filter: saturate(180%) blur(40px); box-shadow: var(--shadow-3); overflow: hidden; animation: pop 0.45s var(--spring) both; }
-.agent-thread { flex: 1; min-height: 120px; overflow-y: auto; padding: 22px 22px 8px; display: flex; flex-direction: column; gap: 10px; }
-.agent-empty { text-align: center; padding: 18px 0 8px; }
-.agent-empty-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 17px; background: var(--accent-soft); color: var(--accent); }
-.agent-empty h3 { margin: 0 0 4px; color: var(--ink); font-size: 20px; font-weight: 700; letter-spacing: -0.025em; }
-.agent-empty p { margin: 0 0 18px; color: var(--ink-2); font-size: 14px; }
-.agent-suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.agent-suggestions button { padding: 8px 14px; border: 0; border-radius: 980px; background: var(--fill); color: var(--ink); font-size: 13px; }
-.agent-suggestions button:hover { background: var(--accent-soft); color: var(--accent); }
-.agent-msg { max-width: 86%; animation: rise 0.4s var(--ease) both; }
-.agent-msg p { margin: 0; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-.agent-user { align-self: flex-end; }
-.agent-user p { background: var(--accent); color: #fff; border-bottom-right-radius: 6px; }
-.agent-assistant { align-self: flex-start; display: flex; flex-direction: column; gap: 6px; }
-.agent-assistant p { background: var(--fill); color: var(--ink); border-bottom-left-radius: 6px; }
-.agent-error p { color: var(--red); }
-.agent-action { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 5px 11px; border-radius: 99px; background: rgba(48, 179, 80, 0.14); color: var(--green); font-size: 12px; font-weight: 600; }
-.agent-typing { flex-direction: row; gap: 5px; padding: 14px 16px; border-radius: 18px; background: var(--fill); }
-.agent-typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); animation: agentDot 1.2s ease-in-out infinite; }
-.agent-typing span:nth-child(2) { animation-delay: 0.15s; } .agent-typing span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes agentDot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
-.agent-input { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 22px; border-top: 1px solid var(--line); color: var(--ink-3); }
-.agent-input input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--ink); font-size: 16px; }
-.agent-input button { width: 34px; height: 34px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--accent); color: #fff; }
-.agent-input button .icon { transform: rotate(90deg); }
-.agent-input button:disabled { background: var(--fill-2); color: var(--ink-3); }
-@media (max-width: 760px) { .agent-fab { right: 14px; bottom: 14px; } .agent-fab kbd { display: none; } .agent-overlay { padding-top: 6vh; } }
+@property --ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@keyframes agentAngle { to { --ang: 360deg; } }
+
+:root {
+  --ai-blue: #0a84ff; --ai-purple: #bf5af2; --ai-pink: #ff375f; --ai-orange: #ff9f0a; --ai-green: #30d158;
+  --ai-gradient: conic-gradient(from var(--ang), var(--ai-blue), var(--ai-purple), var(--ai-pink), var(--ai-orange), var(--ai-green), var(--ai-blue));
+}
+
+/* ----- Orb ----- */
+.ai-orb { position: relative; flex-shrink: 0; width: var(--s); height: var(--s); border-radius: 50%; overflow: hidden; box-shadow: 0 0 calc(var(--s) * 0.55) rgba(191, 90, 242, 0.45); animation: orbBreath 4s ease-in-out infinite; }
+.ai-orb::before { content: ""; position: absolute; inset: -20%; background: conic-gradient(from 0deg, var(--ai-blue), var(--ai-purple), var(--ai-pink), var(--ai-orange), var(--ai-green), var(--ai-blue)); animation: orbSpin 6s linear infinite; filter: saturate(1.25); }
+.ai-orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 52%), radial-gradient(circle at 70% 85%, rgba(0, 0, 0, 0.18), transparent 60%); }
+.ai-orb.thinking { animation: orbPulse 1.1s ease-in-out infinite; } .ai-orb.thinking::before { animation-duration: 1.6s; }
+@keyframes orbSpin { to { transform: rotate(360deg); } }
+@keyframes orbBreath { 50% { transform: scale(1.06); } }
+@keyframes orbPulse { 50% { transform: scale(1.16); box-shadow: 0 0 calc(var(--s) * 0.9) rgba(10, 132, 255, 0.6); } }
+
+/* ----- Floating button ----- */
+.agent-fab { position: fixed; right: 24px; bottom: 24px; z-index: 900; isolation: isolate; display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px 0 13px; border: 0; border-radius: 980px; background: var(--glass); color: var(--ink); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); box-shadow: var(--shadow-2); transition: transform 0.4s var(--spring), box-shadow 0.4s var(--ease); animation: rise 0.8s var(--ease) 0.4s both; }
+.agent-fab::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px; background: var(--ai-gradient); animation: agentAngle 6s linear infinite; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); opacity: 0.85; }
+.agent-fab::after { content: ""; position: absolute; inset: -3px; z-index: -2; border-radius: inherit; background: var(--ai-gradient); filter: blur(14px); opacity: 0.22; animation: agentAngle 6s linear infinite; transition: opacity 0.4s ease; }
+.agent-fab:hover { transform: translateY(-3px) scale(1.03); } .agent-fab:hover::after { opacity: 0.5; }
+.agent-fab kbd, .agent-hints kbd { padding: 2px 7px; border-radius: 7px; background: var(--fill); color: var(--ink-3); font: inherit; font-size: 11px; font-weight: 500; }
+
+/* ----- Overlay ----- */
+.agent-overlay { position: fixed; inset: 0; z-index: 1500; display: flex; align-items: flex-start; justify-content: center; padding: 10vh 16px 16px; background: radial-gradient(60% 50% at 25% 15%, rgba(10, 132, 255, 0.28), transparent 70%), radial-gradient(50% 45% at 80% 85%, rgba(191, 90, 242, 0.26), transparent 70%), radial-gradient(40% 40% at 70% 20%, rgba(255, 55, 95, 0.14), transparent 70%), rgba(0, 0, 0, 0.38); background-size: 140% 140%; backdrop-filter: blur(22px) saturate(140%); -webkit-backdrop-filter: blur(22px) saturate(140%); animation: fade 0.3s ease both, aurora 14s ease-in-out infinite alternate; }
+@keyframes aurora { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+
+.agent-shell { position: relative; width: min(100%, 680px); animation: agentIn 0.6s var(--spring) both; }
+@keyframes agentIn { from { opacity: 0; transform: translateY(26px) scale(0.94); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+.agent-glow { position: absolute; inset: -4px; border-radius: 34px; background: var(--ai-gradient); filter: blur(22px); opacity: 0.3; animation: agentAngle 9s linear infinite; transition: opacity 0.6s ease, filter 0.6s ease; }
+.agent-glow.busy { opacity: 0.75; filter: blur(30px); animation-duration: 3s; }
+.agent-ring { position: absolute; inset: -1.5px; border-radius: 30px; padding: 1.5px; background: var(--ai-gradient); animation: agentAngle 9s linear infinite; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); opacity: 0.5; transition: opacity 0.5s ease; pointer-events: none; z-index: 2; }
+.agent-ring.busy { opacity: 1; animation-duration: 2.4s; }
+
+.agent-panel { position: relative; display: flex; flex-direction: column; max-height: 74vh; border-radius: 28px; background: var(--glass); backdrop-filter: saturate(200%) blur(50px); -webkit-backdrop-filter: saturate(200%) blur(50px); overflow: hidden; }
+.agent-head { display: flex; align-items: center; gap: 12px; padding: 18px 18px 14px 22px; border-bottom: 1px solid var(--line); }
+.agent-head-text { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.agent-head-text strong { color: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+.agent-head-text span { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-3); font-size: 12px; }
+.agent-head-text i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(48, 179, 80, 0.16); transition: background 0.3s ease; }
+.agent-head-text i.busy { background: var(--ai-orange); box-shadow: 0 0 0 3px rgba(255, 159, 10, 0.2); animation: pulse 1s ease-in-out infinite; }
+.agent-icon-btn { width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--fill); color: var(--ink-2); }
+.agent-icon-btn:hover { background: var(--fill-2); color: var(--ink); }
+
+/* ----- Thread ----- */
+.agent-thread { flex: 1; min-height: 160px; overflow-y: auto; padding: 22px 22px 10px; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
+.agent-empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 0 6px; }
+.agent-empty .ai-orb { margin-bottom: 18px; animation: orbBreath 4s ease-in-out infinite, rise 0.8s var(--ease) both; }
+.agent-empty h3 { margin: 0 0 6px; color: var(--ink); font-size: 28px; font-weight: 700; letter-spacing: -0.035em; animation: rise 0.7s var(--ease) 0.08s both; }
+.agent-empty p { margin: 0 0 24px; color: var(--ink-2); font-size: 15px; animation: rise 0.7s var(--ease) 0.14s both; }
+.agent-suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.agent-suggestions button { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--fill); text-align: left; animation: rise 0.6s var(--ease) both; transition: transform 0.35s var(--spring), background 0.25s ease, box-shadow 0.3s var(--ease), border-color 0.25s ease; }
+.agent-suggestions button:hover { transform: translateY(-3px); background: var(--card); border-color: transparent; box-shadow: var(--shadow-2), 0 0 0 1.5px var(--accent-soft); }
+.agent-sug-icon { width: 32px; height: 32px; display: grid; place-items: center; margin-bottom: 8px; border-radius: 10px; background: linear-gradient(135deg, var(--ai-blue), var(--ai-purple)); color: #fff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); transition: transform 0.4s var(--spring); }
+.agent-suggestions button:hover .agent-sug-icon { transform: scale(1.12) rotate(-6deg); }
+.agent-suggestions strong { color: var(--ink); font-size: 14px; font-weight: 600; } .agent-suggestions em { color: var(--ink-3); font-size: 12px; font-style: normal; }
+
+.agent-row { animation: rise 0.45s var(--ease) both; }
+.agent-user { align-self: flex-end; max-width: 82%; }
+.agent-user p { margin: 0; padding: 11px 16px; border-radius: 20px 20px 6px 20px; background: linear-gradient(135deg, var(--ai-blue), #7d5cf0); color: #fff; font-size: 15px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; box-shadow: 0 8px 22px rgba(10, 132, 255, 0.28); }
+.agent-assistant { display: flex; gap: 12px; align-items: flex-start; }
+.agent-assistant > .ai-orb { margin-top: 2px; }
+.agent-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.agent-text { color: var(--ink); font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
+.agent-text p { margin: 0 0 8px; } .agent-text p:last-child { margin-bottom: 0; }
+.agent-text ul { margin: 4px 0 8px; padding-left: 20px; } .agent-text li { margin: 4px 0; } .agent-text li::marker { color: var(--accent); }
+.agent-text strong { font-weight: 650; }
+.agent-text code { padding: 1px 6px; border-radius: 6px; background: var(--fill-2); font-size: 13px; }
+.agent-caret { display: inline-block; width: 7px; height: 16px; margin-left: 2px; vertical-align: -2px; border-radius: 2px; background: var(--accent); animation: pulse 0.8s ease-in-out infinite; }
+.agent-error .agent-text { color: var(--red); }
+.agent-shimmer { padding-top: 4px; font-size: 15px; font-weight: 500; background: linear-gradient(90deg, var(--ink-3) 0%, var(--ink) 45%, var(--ink-3) 90%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: agentShimmer 1.6s linear infinite, rise 0.4s var(--ease) both; }
+@keyframes agentShimmer { from { background-position: 120% 0; } to { background-position: -100% 0; } }
+
+/* ----- Action cards ----- */
+.agent-actions { display: flex; flex-direction: column; gap: 8px; }
+.agent-action { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid rgba(48, 179, 80, 0.22); border-radius: 16px; background: linear-gradient(135deg, rgba(48, 179, 80, 0.12), rgba(48, 179, 80, 0.04)); animation: actionIn 0.55s var(--spring) both; }
+@keyframes actionIn { from { opacity: 0; transform: translateX(-14px) scale(0.96); } to { opacity: 1; transform: none; } }
+.agent-action-icon { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; background: var(--green); color: #fff; box-shadow: 0 4px 12px rgba(48, 179, 80, 0.35); }
+.agent-action > div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.agent-action strong { color: var(--ink); font-size: 13px; font-weight: 600; } .agent-action > div > span { color: var(--ink-2); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-tick { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: var(--green); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; animation: tickDraw 0.5s var(--ease) 0.35s forwards; }
+@keyframes tickDraw { to { stroke-dashoffset: 0; } }
+
+.agent-tools button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border: 0; border-radius: 99px; background: transparent; color: var(--ink-3); font-size: 12px; animation: fade 0.4s ease both; }
+.agent-tools button:hover { background: var(--fill); color: var(--ink); }
+.agent-followups { display: flex; flex-wrap: wrap; gap: 8px; animation: rise 0.5s var(--ease) both; }
+.agent-followups button { padding: 8px 14px; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--ink-2); font-size: 13px; }
+.agent-followups button:hover { background: var(--accent-soft); border-color: transparent; color: var(--accent); transform: translateY(-1px); }
+
+/* ----- Input ----- */
+.agent-input { display: flex; align-items: center; gap: 12px; margin: 6px 16px 10px; padding: 7px 7px 7px 20px; border: 1px solid var(--line); border-radius: 99px; background: var(--fill); transition: background 0.25s ease, box-shadow 0.35s var(--ease), border-color 0.25s ease; }
+.agent-input:focus-within { background: var(--card); border-color: transparent; box-shadow: 0 0 0 2px var(--ai-blue), 0 0 0 6px rgba(10, 132, 255, 0.16), 0 10px 30px rgba(10, 132, 255, 0.12); }
+.agent-input input { flex: 1; min-width: 0; height: 38px; border: 0; background: transparent; color: var(--ink); font-size: 16px; outline: none; }
+.agent-input button { width: 38px; height: 38px; flex-shrink: 0; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: linear-gradient(135deg, var(--ai-blue), #7d5cf0); color: #fff; box-shadow: 0 6px 16px rgba(10, 132, 255, 0.4); transition: transform 0.35s var(--spring), opacity 0.25s ease, box-shadow 0.25s ease; }
+.agent-input button:hover:not(:disabled) { transform: scale(1.1) translateY(-1px); }
+.agent-input button:disabled { background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
+.agent-hints { display: flex; justify-content: center; gap: 18px; padding: 0 16px 14px; color: var(--ink-3); font-size: 12px; }
+.agent-hints span { display: inline-flex; align-items: center; gap: 6px; }
+
+@media (max-width: 640px) {
+  .agent-fab { right: 14px; bottom: 14px; } .agent-fab kbd, .agent-hints { display: none; }
+  .agent-overlay { align-items: flex-end; padding: 0; }
+  .agent-shell { width: 100%; animation-name: sheetIn; }
+  .agent-glow, .agent-ring { border-radius: 30px 30px 0 0; } .agent-panel { max-height: 88vh; border-radius: 28px 28px 0 0; }
+  .agent-suggestions { grid-template-columns: 1fr; } .agent-input { margin-bottom: 16px; }
+}
+@keyframes sheetIn { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: none; } }
