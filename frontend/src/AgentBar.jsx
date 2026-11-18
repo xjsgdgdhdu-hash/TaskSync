@@ -3,7 +3,8 @@ import { supabase } from "./lib/supabase.js";
 import { Icon } from "./ui.jsx";
 import "./AgentBar.css";
 
-const AGENT_URL = import.meta.env.VITE_AGENT_URL || "http://localhost:8000";
+// Same origin on Vercel (/api/chat). For local dev with uvicorn set VITE_AGENT_URL=http://localhost:8000
+const AGENT_URL = import.meta.env.VITE_AGENT_URL || "";
 
 const SUGGESTIONS = [
   { icon: "clock", title: "What's overdue?", hint: "See what needs attention", text: "What's overdue?" },
@@ -184,7 +185,7 @@ function AgentBar({ onChanged }) {
 
     try {
       const { data } = await supabase.auth.getSession();
-      const response = await fetch(`${AGENT_URL}/chat`, {
+      const response = await fetch(`${AGENT_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
